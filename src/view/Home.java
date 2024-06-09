@@ -4,7 +4,9 @@
  */
 package view;
 
-
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -70,22 +72,18 @@ import java.util.Locale;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
-
 /**
  *
  * @author AN
  */
 public class Home extends javax.swing.JFrame {
-    
+
     public Home() {
         initComponents();
         displayLaptop();
     }
-    
 
-
-    
-    int width =180 ;
+    int width = 180;
     int height = 60;
 
     private void openSettingBar() {
@@ -108,7 +106,7 @@ public class Home extends javax.swing.JFrame {
     }
 
     private void closeSettingBar() {
-        int initialX =810;
+        int initialX = 810;
 
         new Thread(new Runnable() {
             @Override
@@ -131,15 +129,19 @@ public class Home extends javax.swing.JFrame {
         LaptopManager laptopManager = new LaptopManager();
         List<model.Laptop> laptops = laptopManager.getLaptop();
 
-        JPanel displayPanel = new JPanel(new GridLayout(0, 3, 120, 50));
+        JPanel displayPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.NORTHWEST; 
+        gbc.insets = new Insets(0, 0, 50, 120);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         displayPanel.setBackground(Color.WHITE);
-       
-
+           
         for (model.Laptop laptop : laptops) {
             final String laptopId = String.valueOf(laptop.getId());
             KGradientPanel laptopPanel = new KGradientPanel();
             laptopPanel.setLayout(new BoxLayout(laptopPanel, BoxLayout.Y_AXIS));
-            laptopPanel.setPreferredSize(new Dimension(30, 260));
+            laptopPanel.setPreferredSize(new Dimension(265,260));
             laptopPanel.setBackground(Color.WHITE);
             laptopPanel.setkStartColor(mainColor);
             laptopPanel.setkEndColor(Color.white);
@@ -180,7 +182,6 @@ public class Home extends javax.swing.JFrame {
             laptopPanel.add(Box.createVerticalStrut(10));
             laptopPanel.add(priceLabel);
 
-            
             KButton buyButton = new KButton();
             buyButton.setText("BUY");
             buyButton.addActionListener(new ActionListener() {
@@ -201,27 +202,128 @@ public class Home extends javax.swing.JFrame {
 
             laptopPanel.add(buyButton);
 
-            displayPanel.add(laptopPanel);
+            displayPanel.add(laptopPanel, gbc);
+            gbc.gridx++;
+            if (gbc.gridx > 2) {
+                gbc.gridx = 0;
+                gbc.gridy++;
         }
-        
+
         JScrollPane scrollPane = new JScrollPane(displayPanel);
 
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setViewportView(scrollPane);
     }
+    }
+    
+    private void displayLaptopbyName() {
+        Color mainColor = new Color(51, 153, 255);
+        String searchText = searchtxt.getText();
+        List<Laptop> laptops = LaptopManager.getLaptopByName(searchText);
+        
+        JPanel displayPanel = new JPanel(new GridBagLayout());
+        displayPanel.setBackground(Color.WHITE);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.NORTHWEST; 
+        gbc.insets = new Insets(0, 0, 50, 120);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        for (Laptop laptop : laptops) {
+            KGradientPanel laptopPanel = new KGradientPanel();
+            laptopPanel.setLayout(new BoxLayout(laptopPanel, BoxLayout.Y_AXIS));
+            laptopPanel.setPreferredSize(new Dimension(265,260));
+            laptopPanel.setBackground(Color.WHITE);
+            laptopPanel.setkStartColor(mainColor);
+            laptopPanel.setkEndColor(Color.white);
+            laptopPanel.setkBorderRadius(100);
+
+            laptopPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    id.setText(String.valueOf(laptop.getId()));
+                }
+            });
+
+            ImageIcon imageIcon = new ImageIcon(laptop.getImage());
+            JLabel imageLabel = new JLabel(imageIcon);
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            laptopPanel.add(Box.createVerticalStrut(10));
+            laptopPanel.add(imageLabel);
+
+            JLabel nameLabel = new JLabel(laptop.getName());
+            nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            nameLabel.setFont(new Font("Segoe UI", 1, 12));
+            laptopPanel.add(Box.createVerticalStrut(10));
+            laptopPanel.add(nameLabel);
+
+            JLabel descriptionLabel = new JLabel(laptop.getDescription());
+            descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            descriptionLabel.setFont(new Font("Segoe UI", 1, 12));
+            laptopPanel.add(Box.createVerticalStrut(10));
+            laptopPanel.add(descriptionLabel);
+
+            JLabel priceLabel = new JLabel(laptop.getPrice());
+            priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            priceLabel.setFont(new Font("Segoe UI", 1, 12));
+            priceLabel.setForeground(Color.red);
+            laptopPanel.add(Box.createVerticalStrut(10));
+            laptopPanel.add(priceLabel);
+
+            KButton buyButton = new KButton();
+            buyButton.setText("BUY");
+            buyButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Buy detailFrame = new Buy(laptop.getName(), laptop.getPrice());
+                    detailFrame.setVisible(true);
+                }
+            });
+            buyButton.setBackground(mainColor);
+            buyButton.setkAllowGradient(false);
+            buyButton.setkBorderRadius(30);
+            buyButton.setkBackGroundColor(mainColor);
+            buyButton.setkSelectedColor(Color.WHITE);
+            buyButton.setkHoverForeGround(Color.BLACK);
+            laptopPanel.add(Box.createVerticalStrut(10));
+            buyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            laptopPanel.add(buyButton);
+
+            displayPanel.add(laptopPanel, gbc);
+            gbc.gridx++;
+            if (gbc.gridx > 2) {
+                gbc.gridx = 0;
+                gbc.gridy++;
+            }
+        }
+
+        JScrollPane scrollPane = new JScrollPane(displayPanel);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setViewportView(scrollPane);
+}
+
+
+
     private void displayPhone() {
         Color mainColor = new Color(51, 153, 255);
         PhoneManager phoneManager = new PhoneManager();
         List<model.Phone> phones = phoneManager.getPhone();
 
-        JPanel displayPanel = new JPanel(new GridLayout(0, 3, 120, 50));
+        JPanel displayPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.NORTHWEST; 
+        gbc.insets = new Insets(0, 0, 50, 120);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         displayPanel.setBackground(Color.WHITE);
 
         for (model.Phone phone : phones) {
             final String phoneId = String.valueOf(phone.getId());
             KGradientPanel phonePanel = new KGradientPanel();
             phonePanel.setLayout(new BoxLayout(phonePanel, BoxLayout.Y_AXIS));
-            phonePanel.setPreferredSize(new Dimension(30, 250));
+            phonePanel.setPreferredSize(new Dimension(265,260));
             phonePanel.setBackground(Color.WHITE);
             phonePanel.setkStartColor(mainColor);
             phonePanel.setkEndColor(Color.white);
@@ -233,7 +335,6 @@ public class Home extends javax.swing.JFrame {
                 }
             });
             phonePanel.setBackground(Color.WHITE);
-          
 
             ImageIcon imageIcon = new ImageIcon(phone.getImage());
             JLabel imageLabel = new JLabel(imageIcon);
@@ -282,15 +383,107 @@ public class Home extends javax.swing.JFrame {
             phonePanel.add(Box.createVerticalStrut(10));
             phonePanel.add(buyButton);
 
-            displayPanel.add(phonePanel);
+ 
+            displayPanel.add(phonePanel, gbc);
+            gbc.gridx++;
+            if (gbc.gridx > 2) {
+                gbc.gridx = 0;
+                gbc.gridy++;
         }
 
         JScrollPane scrollPane = new JScrollPane(displayPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setViewportView(scrollPane);
     }
+    }
     
-    
+        private void displayPhonebyName() {
+        Color mainColor = new Color(51, 153, 255);
+        String searchText = searchtxt.getText();
+        List<Phone> phones = PhoneManager.getPhoneByName(searchText);
+        JPanel displayPanel = new JPanel(new GridBagLayout());
+        displayPanel.setBackground(Color.WHITE);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.NORTHWEST; 
+        gbc.insets = new Insets(0, 0, 50, 120);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+       for (Phone phone : phones) {
+            KGradientPanel phonePanel = new KGradientPanel();
+            phonePanel.setLayout(new BoxLayout(phonePanel, BoxLayout.Y_AXIS));
+            phonePanel.setPreferredSize(new Dimension(265,260));
+            phonePanel.setBackground(Color.WHITE);
+            phonePanel.setkStartColor(mainColor);
+            phonePanel.setkEndColor(Color.white);
+            phonePanel.setkBorderRadius(100);
+
+            phonePanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    id.setText(String.valueOf(phone.getId()));
+                }
+            });
+
+            ImageIcon imageIcon = new ImageIcon(phone.getImage());
+            JLabel imageLabel = new JLabel(imageIcon);
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            phonePanel.add(Box.createVerticalStrut(10));
+            phonePanel.add(imageLabel);
+
+            JLabel nameLabel = new JLabel(phone.getName());
+            nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            nameLabel.setFont(new Font("Segoe UI", 1, 12));
+            phonePanel.add(Box.createVerticalStrut(10));
+            phonePanel.add(nameLabel);
+
+            JLabel descriptionLabel = new JLabel(phone.getDescription());
+            descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            descriptionLabel.setFont(new Font("Segoe UI", 1, 12));
+            phonePanel.add(Box.createVerticalStrut(10));
+            phonePanel.add(descriptionLabel);
+
+            JLabel priceLabel = new JLabel(phone.getPrice());
+            priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            priceLabel.setFont(new Font("Segoe UI", 1, 12));
+            priceLabel.setForeground(Color.red);
+            phonePanel.add(Box.createVerticalStrut(10));
+            phonePanel.add(priceLabel);
+
+            KButton buyButton = new KButton();
+            buyButton.setText("BUY");
+            buyButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Buy detailFrame = new Buy(phone.getName(), phone.getPrice());
+                    detailFrame.setVisible(true);
+                }
+            });
+            buyButton.setBackground(mainColor);
+            buyButton.setkAllowGradient(false);
+            buyButton.setkBorderRadius(30);
+            buyButton.setkBackGroundColor(mainColor);
+            buyButton.setkSelectedColor(Color.WHITE);
+            buyButton.setkHoverForeGround(Color.BLACK);
+            phonePanel.add(Box.createVerticalStrut(10));
+            buyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            phonePanel.add(buyButton);
+
+            displayPanel.add(phonePanel, gbc);
+            gbc.gridx++;
+            if (gbc.gridx > 2) {
+                gbc.gridx = 0;
+                gbc.gridy++;
+            }
+        }
+
+        JScrollPane scrollPane = new JScrollPane(displayPanel);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setViewportView(scrollPane);
+}
+
     private void displayDailyTable() {
         DefaultTableModel model = new DefaultTableModel();
         model.addColumn("Product Name");
@@ -303,30 +496,27 @@ public class Home extends javax.swing.JFrame {
         String query = "SELECT nameproduct, quantity, price,date FROM `order`";
 
         try (
-        Connection connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = connection.prepareStatement(query);
-        ResultSet resultSet = statement.executeQuery();
-    )   {
-        while (resultSet.next()) {
-            String nameproduct = resultSet.getString("nameproduct");
-            int quantity = resultSet.getInt("quantity");
-            int price = Integer.parseInt(resultSet.getString("price").replaceAll("[^\\d]", ""));
-            Date date = resultSet.getDate("date");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-            String formattedDate = dateFormat.format(date);
-            int total = quantity * price;
-            totalRevenue += total;
-            model.addRow(new Object[]{nameproduct, quantity, price + "đ", formattedDate, total + "đ"});
-        }
+                Connection connection = DatabaseConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery();) {
+            while (resultSet.next()) {
+                String nameproduct = resultSet.getString("nameproduct");
+                int quantity = resultSet.getInt("quantity");
+                int price = Integer.parseInt(resultSet.getString("price").replaceAll("[^\\d]", ""));
+                Date date = resultSet.getDate("date");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String formattedDate = dateFormat.format(date);
+                int total = quantity * price;
+                totalRevenue += total;
+                model.addRow(new Object[]{nameproduct, quantity, price + "đ", formattedDate, total + "đ"});
+            }
         } catch (SQLException e) {
-        e.printStackTrace();
+            e.printStackTrace();
         }
         JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
-        
+
         Color mainColor = new Color(51, 153, 255);
         KGradientPanel totalRevenuepanel = new KGradientPanel();
-        totalRevenuepanel.setPreferredSize(new Dimension(250,50));
+        totalRevenuepanel.setPreferredSize(new Dimension(250, 50));
         totalRevenuepanel.setBackground(Color.WHITE);
         totalRevenuepanel.setkStartColor(mainColor);
         totalRevenuepanel.setkEndColor(Color.white);
@@ -338,36 +528,36 @@ public class Home extends javax.swing.JFrame {
         totalRevenuepanel.add(searchField);
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(e -> {
-            int totalRevenue1 =0;
+            int totalRevenue1 = 0;
             String searchText = searchField.getText();
             System.out.println(searchText);
-        if (!searchText.isEmpty()) {
-            try { 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date searchDate = dateFormat.parse(searchText);
-                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-                table.setRowSorter(sorter);
-                int dateColumnIndex = model.findColumn("Date");
-                RowFilter<DefaultTableModel, Integer> rowFilter = RowFilter.regexFilter(searchText, dateColumnIndex);
-                sorter.setRowFilter(rowFilter);
-                for (int i = 0; i < table.getRowCount(); i++) {
-                int quantity = (int) table.getValueAt(i, 1);
-                String value = table.getValueAt(i, 2).toString();
-                value = value.replaceAll("\\D", "");
-                int price = Integer.parseInt(value);
-                int total = quantity * price;
-                totalRevenue1 += total;
+            if (!searchText.isEmpty()) {
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date searchDate = dateFormat.parse(searchText);
+                    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+                    table.setRowSorter(sorter);
+                    int dateColumnIndex = model.findColumn("Date");
+                    RowFilter<DefaultTableModel, Integer> rowFilter = RowFilter.regexFilter(searchText, dateColumnIndex);
+                    sorter.setRowFilter(rowFilter);
+                    for (int i = 0; i < table.getRowCount(); i++) {
+                        int quantity = (int) table.getValueAt(i, 1);
+                        String value = table.getValueAt(i, 2).toString();
+                        value = value.replaceAll("\\D", "");
+                        int price = Integer.parseInt(value);
+                        int total = quantity * price;
+                        totalRevenue1 += total;
+                    }
+                    totalRevenuelabel.setText("Total Revenue: " + totalRevenue1 + "đ");
+                } catch (ParseException ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid date format. Please enter the date in yyyy-MM-dd format.");
                 }
-                totalRevenuelabel.setText("Total Revenue: " + totalRevenue1 + "đ");
-            } catch (ParseException ex) {
-                JOptionPane.showMessageDialog(null, "Invalid date format. Please enter the date in yyyy-MM-dd format.");
+            } else {
+                TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
+                if (sorter != null) {
+                    sorter.setRowFilter(null);
+                }
             }
-        } else {
-            TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
-            if (sorter != null) {
-                sorter.setRowFilter(null);
-            }
-        }
         });
         totalRevenuepanel.add(searchButton);
         JPanel panel = new JPanel();
@@ -376,8 +566,7 @@ public class Home extends javax.swing.JFrame {
         panel.add(totalRevenuepanel, BorderLayout.SOUTH);
         jScrollPane1.setViewportView(panel);
     }
-    
-    
+
     private void displayUserTable() {
         DefaultTableModel model = new DefaultTableModel();
         model.addColumn("Customer Name");
@@ -386,49 +575,46 @@ public class Home extends javax.swing.JFrame {
         String query = "SELECT name, id, phone FROM `customer`";
 
         try (
-        Connection connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = connection.prepareStatement(query);
-        ResultSet resultSet = statement.executeQuery();
-    )   {
-        while (resultSet.next()) {
-            String namecustomer = resultSet.getString("name");
-            String id = resultSet.getString("id");
-            String phone = resultSet.getString("phone");
-            model.addRow(new Object[]{namecustomer, id, phone});
-        }
+                Connection connection = DatabaseConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery();) {
+            while (resultSet.next()) {
+                String namecustomer = resultSet.getString("name");
+                String id = resultSet.getString("id");
+                String phone = resultSet.getString("phone");
+                model.addRow(new Object[]{namecustomer, id, phone});
+            }
         } catch (SQLException e) {
-        e.printStackTrace();
+            e.printStackTrace();
         }
         JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
-        
+
         Color mainColor = new Color(51, 153, 255);
         KGradientPanel totalRevenuepanel = new KGradientPanel();
-        totalRevenuepanel.setPreferredSize(new Dimension(250,50));
+        totalRevenuepanel.setPreferredSize(new Dimension(250, 50));
         totalRevenuepanel.setBackground(Color.WHITE);
         totalRevenuepanel.setkStartColor(mainColor);
         totalRevenuepanel.setkEndColor(Color.white);
-        
+
         JTextField searchField = new JTextField(10);
         totalRevenuepanel.add(searchField);
-        
+
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(e -> {
             String searchText = searchField.getText();
             System.out.println(searchText);
-        if (!searchText.isEmpty()) {
-           
+            if (!searchText.isEmpty()) {
+
                 TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
                 table.setRowSorter(sorter);
                 int dateColumnIndex = model.findColumn("ID");
                 RowFilter<DefaultTableModel, Integer> rowFilter = RowFilter.regexFilter(searchText, dateColumnIndex);
                 sorter.setRowFilter(rowFilter);
-        } else {
-            TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
-            if (sorter != null) {
-                sorter.setRowFilter(null);
+            } else {
+                TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
+                if (sorter != null) {
+                    sorter.setRowFilter(null);
+                }
             }
-        }
         });
         totalRevenuepanel.add(searchButton);
         JPanel panel = new JPanel();
@@ -437,7 +623,6 @@ public class Home extends javax.swing.JFrame {
         panel.add(totalRevenuepanel, BorderLayout.SOUTH);
         jScrollPane1.setViewportView(panel);
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -465,6 +650,8 @@ public class Home extends javax.swing.JFrame {
         updatelb = new javax.swing.JLabel();
         id = new javax.swing.JTextField();
         typetxt = new javax.swing.JTextField();
+        searchtxt = new javax.swing.JTextField();
+        searchbt = new com.k33ptoo.components.KButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
 
@@ -674,10 +861,29 @@ public class Home extends javax.swing.JFrame {
                 idActionPerformed(evt);
             }
         });
-        kGradientPanel1.add(id, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
+        kGradientPanel1.add(id, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         typetxt.setVisible(false);
-        kGradientPanel1.add(typetxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
+        kGradientPanel1.add(typetxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, -1, -1));
+
+        searchtxt.setName(""); // NOI18N
+        kGradientPanel1.add(searchtxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 290, 30));
+
+        searchbt.setText("SEARCH");
+        searchbt.setkBackGroundColor(new java.awt.Color(51, 153, 255));
+        searchbt.setkEndColor(new java.awt.Color(255, 255, 255));
+        searchbt.setkHoverEndColor(new java.awt.Color(51, 153, 255));
+        searchbt.setkHoverForeGround(new java.awt.Color(0, 0, 0));
+        searchbt.setkHoverStartColor(new java.awt.Color(255, 255, 255));
+        searchbt.setkPressedColor(new java.awt.Color(255, 255, 255));
+        searchbt.setkSelectedColor(new java.awt.Color(255, 255, 255));
+        searchbt.setkStartColor(new java.awt.Color(51, 153, 255));
+        searchbt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchbtActionPerformed(evt);
+            }
+        });
+        kGradientPanel1.add(searchbt, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 20, 100, 30));
 
         jPanel1.add(kGradientPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 0, 1060, 60));
 
@@ -713,6 +919,7 @@ public class Home extends javax.swing.JFrame {
 
     private void btCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCustomerActionPerformed
         displayUserTable();
+        typetxt.setText(btCustomer.getText());
     }//GEN-LAST:event_btCustomerActionPerformed
 
     private void btLaptopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLaptopActionPerformed
@@ -722,7 +929,7 @@ public class Home extends javax.swing.JFrame {
     private void btLaptopMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btLaptopMouseClicked
         displayLaptop();
         typetxt.setText(btLaptop.getText());
-        
+
     }//GEN-LAST:event_btLaptopMouseClicked
 
     private void btPhoneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btPhoneMouseClicked
@@ -732,6 +939,7 @@ public class Home extends javax.swing.JFrame {
 
     private void btDailyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDailyActionPerformed
         displayDailyTable();
+        typetxt.setText(btDaily.getText());
     }//GEN-LAST:event_btDailyActionPerformed
 
     private void btDailyMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btDailyMouseClicked
@@ -758,18 +966,18 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_logOutMouseClicked
 
     private void idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idActionPerformed
-       
+
     }//GEN-LAST:event_idActionPerformed
 
     private void deletelbMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deletelbMouseClicked
         String types = typetxt.getText();
-        if(types.equals("LAPTOP")){
+        if (types.equals("LAPTOP")) {
             Laptop laptops = new Laptop();
             final int ids = Integer.valueOf(id.getText());
             laptops.setId(ids);
             LaptopManager.delete(laptops);
             displayLaptop();
-        }else if(types.equals("SMARTPHONE")){
+        } else if (types.equals("SMARTPHONE")) {
             Phone phones = new Phone();
             final int ids = Integer.valueOf(id.getText());
             phones.setId(ids);
@@ -779,12 +987,21 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_deletelbMouseClicked
 
     private void updatelbMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updatelbMouseClicked
-        UpdateProduct update = new UpdateProduct(id.getText(),typetxt.getText());
+        UpdateProduct update = new UpdateProduct(id.getText(), typetxt.getText());
         String types = typetxt.getText();
         update.setVisible(true);
     }//GEN-LAST:event_updatelbMouseClicked
 
-    public static void main(String args[]) { 
+    private void searchbtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchbtActionPerformed
+        String types = typetxt.getText();
+        if (types.equals("SMARTPHONE")) {
+            displayPhonebyName();
+        } else { 
+            displayLaptopbyName();
+        }
+    }//GEN-LAST:event_searchbtActionPerformed
+
+    public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -832,12 +1049,12 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private com.k33ptoo.components.KGradientPanel kGradientPanel1;
     private javax.swing.JLabel logOut;
+    private com.k33ptoo.components.KButton searchbt;
+    private javax.swing.JTextField searchtxt;
     private com.k33ptoo.components.KGradientPanel setting;
     private javax.swing.JLabel settingbt;
     private javax.swing.JTextField typetxt;
     private javax.swing.JLabel updatelb;
     // End of variables declaration//GEN-END:variables
 
-
 }
-
