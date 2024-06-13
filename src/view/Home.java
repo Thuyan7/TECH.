@@ -7,42 +7,32 @@ package view;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
-import javax.swing.table.DefaultTableModel;
-import java.sql.*;
-import database.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import DataBase.LaptopManager;
 import DataBase.PhoneManager;
+import DataBase.StaffManager;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.k33ptoo.components.KButton;
 import com.k33ptoo.components.KGradientPanel;
-import controller.AddProductController;
 import database.DatabaseConnection;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.dnd.DragSourceListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -52,23 +42,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import model.Laptop;
 import model.Phone;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Locale;
+import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
@@ -77,7 +56,7 @@ import javax.swing.table.TableRowSorter;
  * @author AN
  */
 public class Home extends javax.swing.JFrame {
-
+    private JTable table;
     public Home() {
         initComponents();
         displayLaptop();
@@ -129,19 +108,14 @@ public class Home extends javax.swing.JFrame {
         LaptopManager laptopManager = new LaptopManager();
         List<model.Laptop> laptops = laptopManager.getLaptop();
 
-        JPanel displayPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.NORTHWEST; 
-        gbc.insets = new Insets(0, 0, 50, 120);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+        JPanel displayPanel = new JPanel(new GridLayout(0, 3, 120, 50)); 
         displayPanel.setBackground(Color.WHITE);
-           
+
         for (model.Laptop laptop : laptops) {
             final String laptopId = String.valueOf(laptop.getId());
             KGradientPanel laptopPanel = new KGradientPanel();
             laptopPanel.setLayout(new BoxLayout(laptopPanel, BoxLayout.Y_AXIS));
-            laptopPanel.setPreferredSize(new Dimension(265,260));
+            laptopPanel.setPreferredSize(new Dimension(265, 260));
             laptopPanel.setBackground(Color.WHITE);
             laptopPanel.setkStartColor(mainColor);
             laptopPanel.setkEndColor(Color.white);
@@ -160,21 +134,21 @@ public class Home extends javax.swing.JFrame {
             laptopPanel.add(Box.createVerticalStrut(10));
             laptopPanel.add(imageLabel);
 
-            // Name
+      
             JLabel nameLabel = new JLabel(laptop.getName());
             nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             nameLabel.setFont(new Font("Segoe UI", 1, 12));
             laptopPanel.add(Box.createVerticalStrut(10));
             laptopPanel.add(nameLabel);
 
-            // Description
+            
             JLabel descriptionLabel = new JLabel(laptop.getDescription());
             descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             descriptionLabel.setFont(new Font("Segoe UI", 1, 12));
             laptopPanel.add(Box.createVerticalStrut(10));
             laptopPanel.add(descriptionLabel);
 
-            // Price
+            
             JLabel priceLabel = new JLabel(laptop.getPrice());
             priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             priceLabel.setFont(new Font("Segoe UI", 1, 12));
@@ -202,19 +176,15 @@ public class Home extends javax.swing.JFrame {
 
             laptopPanel.add(buyButton);
 
-            displayPanel.add(laptopPanel, gbc);
-            gbc.gridx++;
-            if (gbc.gridx > 2) {
-                gbc.gridx = 0;
-                gbc.gridy++;
+            displayPanel.add(laptopPanel);
         }
 
         JScrollPane scrollPane = new JScrollPane(displayPanel);
-
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setViewportView(scrollPane);
-    }
-    }
+}
+
+
     
     private void displayLaptopbyName() {
         Color mainColor = new Color(51, 153, 255);
@@ -306,24 +276,21 @@ public class Home extends javax.swing.JFrame {
 
 
 
+
     private void displayPhone() {
         Color mainColor = new Color(51, 153, 255);
         PhoneManager phoneManager = new PhoneManager();
         List<model.Phone> phones = phoneManager.getPhone();
 
-        JPanel displayPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.NORTHWEST; 
-        gbc.insets = new Insets(0, 0, 50, 120);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+        JPanel displayPanel = new JPanel();
+        displayPanel.setLayout(new GridLayout(0, 3, 120, 50)); 
         displayPanel.setBackground(Color.WHITE);
 
         for (model.Phone phone : phones) {
             final String phoneId = String.valueOf(phone.getId());
             KGradientPanel phonePanel = new KGradientPanel();
             phonePanel.setLayout(new BoxLayout(phonePanel, BoxLayout.Y_AXIS));
-            phonePanel.setPreferredSize(new Dimension(265,260));
+            phonePanel.setPreferredSize(new Dimension(265, 260));
             phonePanel.setBackground(Color.WHITE);
             phonePanel.setkStartColor(mainColor);
             phonePanel.setkEndColor(Color.white);
@@ -334,7 +301,6 @@ public class Home extends javax.swing.JFrame {
                     id.setText(phoneId);
                 }
             });
-            phonePanel.setBackground(Color.WHITE);
 
             ImageIcon imageIcon = new ImageIcon(phone.getImage());
             JLabel imageLabel = new JLabel(imageIcon);
@@ -342,24 +308,24 @@ public class Home extends javax.swing.JFrame {
             phonePanel.add(Box.createVerticalStrut(10));
             phonePanel.add(imageLabel);
 
-            // Name
+            
             JLabel nameLabel = new JLabel(phone.getName());
             nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            nameLabel.setFont(new Font("Segoe UI", 1, 12));
+            nameLabel.setFont(new Font("Segoe UI", 1, 12)); 
             phonePanel.add(Box.createVerticalStrut(10));
             phonePanel.add(nameLabel);
 
-            // Description
+            
             JLabel descriptionLabel = new JLabel(phone.getDescription());
             descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            descriptionLabel.setFont(new Font("Segoe UI", 1, 12));
+            descriptionLabel.setFont(new Font("Segoe UI", 1, 12)); 
             phonePanel.add(Box.createVerticalStrut(10));
             phonePanel.add(descriptionLabel);
 
             // Price
             JLabel priceLabel = new JLabel(phone.getPrice());
             priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            priceLabel.setFont(new Font("Segoe UI", 1, 12));
+            priceLabel.setFont(new Font("Segoe UI", 1, 12)); 
             priceLabel.setForeground(Color.red);
             phonePanel.add(Box.createVerticalStrut(10));
             phonePanel.add(priceLabel);
@@ -383,21 +349,17 @@ public class Home extends javax.swing.JFrame {
             phonePanel.add(Box.createVerticalStrut(10));
             phonePanel.add(buyButton);
 
- 
-            displayPanel.add(phonePanel, gbc);
-            gbc.gridx++;
-            if (gbc.gridx > 2) {
-                gbc.gridx = 0;
-                gbc.gridy++;
+            displayPanel.add(phonePanel);
         }
+
 
         JScrollPane scrollPane = new JScrollPane(displayPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setViewportView(scrollPane);
     }
-    }
+
     
-        private void displayPhonebyName() {
+    private void displayPhonebyName() {
         Color mainColor = new Color(51, 153, 255);
         String searchText = searchtxt.getText();
         List<Phone> phones = PhoneManager.getPhoneByName(searchText);
@@ -496,7 +458,9 @@ public class Home extends javax.swing.JFrame {
         String query = "SELECT nameproduct, quantity, price,date FROM `order`";
 
         try (
-                Connection connection = DatabaseConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery();) {
+                Connection connection = DatabaseConnection.getConnection(); 
+                PreparedStatement statement = connection.prepareStatement(query);
+                ResultSet resultSet = statement.executeQuery();) {
             while (resultSet.next()) {
                 String nameproduct = resultSet.getString("nameproduct");
                 int quantity = resultSet.getInt("quantity");
@@ -511,7 +475,7 @@ public class Home extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        JTable table = new JTable(model);
+        table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
 
         Color mainColor = new Color(51, 153, 255);
@@ -572,10 +536,13 @@ public class Home extends javax.swing.JFrame {
         model.addColumn("Customer Name");
         model.addColumn("ID");
         model.addColumn("Phone Number");
+        
         String query = "SELECT name, id, phone FROM `customer`";
 
         try (
-                Connection connection = DatabaseConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery();) {
+                Connection connection = DatabaseConnection.getConnection(); 
+                PreparedStatement statement = connection.prepareStatement(query);
+                ResultSet resultSet = statement.executeQuery();) {
             while (resultSet.next()) {
                 String namecustomer = resultSet.getString("name");
                 String id = resultSet.getString("id");
@@ -585,7 +552,7 @@ public class Home extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        JTable table = new JTable(model);
+        table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
 
         Color mainColor = new Color(51, 153, 255);
@@ -623,6 +590,106 @@ public class Home extends javax.swing.JFrame {
         panel.add(totalRevenuepanel, BorderLayout.SOUTH);
         jScrollPane1.setViewportView(panel);
     }
+    
+    private void displayStaffTable() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID");
+        model.addColumn("Staff Name");
+        model.addColumn("Citizen ID");
+        model.addColumn("Birth Date");
+        model.addColumn("Account Status");
+        String query = "SELECT id, fullname, citizenid, date, is_approved FROM `accountuser`";
+
+        try (
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String fullname = resultSet.getString("fullname");
+                String citizenid = resultSet.getString("citizenid");
+                String date = resultSet.getString("date");
+                boolean isApproved = resultSet.getBoolean("is_approved");
+                String status = isApproved ? "approved" : "reject";
+                model.addRow(new Object[]{id, fullname, citizenid, date, status});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        JTable table = new JTable(model);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getColumnModel().getColumn(0).setMinWidth(0);
+        table.getColumnModel().getColumn(0).setMaxWidth(0);
+        table.getColumnModel().getColumn(0).setWidth(0);
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow != -1) {
+                        int accountId = (int) model.getValueAt(selectedRow, 0);
+                        String accountName = (String) model.getValueAt(selectedRow, 1);
+                        int response = JOptionPane.showConfirmDialog(
+                            null,
+                            "Do you want to approve the account for " + accountName + "?",
+                            "Approve Account",
+                            JOptionPane.YES_NO_OPTION
+                        );
+                        boolean isApproved = (response == JOptionPane.YES_OPTION);
+                        StaffManager staffManager = new StaffManager();
+                        if (staffManager.updateApprovalStatus(accountId, isApproved)) {
+                            model.setValueAt(isApproved ? "approved" : "reject", selectedRow, 4);
+                            JOptionPane.showMessageDialog(null, "Account status updated successfully.");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Failed to update account status.");
+                        }
+                    }
+                }
+            }
+        });
+
+        Color mainColor = new Color(51, 153, 255);
+        KGradientPanel totalRevenuePanel = new KGradientPanel();
+        totalRevenuePanel.setPreferredSize(new Dimension(250, 50));
+        totalRevenuePanel.setBackground(Color.WHITE);
+        totalRevenuePanel.setkStartColor(mainColor);
+        totalRevenuePanel.setkEndColor(Color.white);
+
+        JTextField searchField = new JTextField(10);
+        totalRevenuePanel.add(searchField);
+
+        JButton searchButton = new JButton("Search");
+        searchButton.addActionListener(e -> {
+            String searchText = searchField.getText();
+            System.out.println(searchText);
+            if (!searchText.isEmpty()) {
+                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+                table.setRowSorter(sorter);
+                int idColumnIndex = model.findColumn("Citizen ID");
+                RowFilter<DefaultTableModel, Integer> rowFilter = RowFilter.regexFilter(searchText, idColumnIndex);
+                sorter.setRowFilter(rowFilter);
+            } else {
+                TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
+                if (sorter != null) {
+                    sorter.setRowFilter(null);
+                }
+            }
+        });
+        totalRevenuePanel.add(searchButton);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(totalRevenuePanel, BorderLayout.SOUTH);
+        jScrollPane1.setViewportView(panel);
+}
+
+
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -641,6 +708,7 @@ public class Home extends javax.swing.JFrame {
         btPhone = new com.k33ptoo.components.KButton();
         btDaily = new com.k33ptoo.components.KButton();
         logOut = new javax.swing.JLabel();
+        btCustomer1 = new com.k33ptoo.components.KButton();
         kGradientPanel1 = new com.k33ptoo.components.KGradientPanel();
         settingbt = new javax.swing.JLabel();
         setting = new com.k33ptoo.components.KGradientPanel();
@@ -741,23 +809,39 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
+        btCustomer1.setText("STAFF INFORMATION");
+        btCustomer1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btCustomer1.setkAllowGradient(false);
+        btCustomer1.setkBackGroundColor(new java.awt.Color(51, 153, 255));
+        btCustomer1.setkBorderRadius(20);
+        btCustomer1.setkHoverForeGround(new java.awt.Color(0, 0, 0));
+        btCustomer1.setkHoverStartColor(new java.awt.Color(0, 0, 0));
+        btCustomer1.setkSelectedColor(new java.awt.Color(255, 255, 255));
+        btCustomer1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCustomer1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout MenuLayout = new javax.swing.GroupLayout(Menu);
         Menu.setLayout(MenuLayout);
         MenuLayout.setHorizontalGroup(
             MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(MenuLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
-                        .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btCustomer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btDaily, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btLaptop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btPhone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
-                        .addComponent(logOut)
-                        .addGap(82, 82, 82))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
+                .addContainerGap(29, Short.MAX_VALUE)
+                .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btCustomer1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
+                            .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(btCustomer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btDaily, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btLaptop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btPhone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addContainerGap())
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
+                            .addComponent(logOut)
+                            .addGap(82, 82, 82)))))
         );
         MenuLayout.setVerticalGroup(
             MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -770,7 +854,9 @@ public class Home extends javax.swing.JFrame {
                 .addComponent(btDaily, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(45, 45, 45)
                 .addComponent(btCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 196, Short.MAX_VALUE)
+                .addGap(31, 31, 31)
+                .addComponent(btCustomer1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 143, Short.MAX_VALUE)
                 .addComponent(logOut)
                 .addGap(50, 50, 50))
         );
@@ -1001,6 +1087,10 @@ public class Home extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_searchbtActionPerformed
 
+    private void btCustomer1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCustomer1ActionPerformed
+        displayStaffTable();
+    }//GEN-LAST:event_btCustomer1ActionPerformed
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -1037,6 +1127,7 @@ public class Home extends javax.swing.JFrame {
     private com.k33ptoo.components.KGradientPanel Menu;
     private javax.swing.JLabel add;
     private com.k33ptoo.components.KButton btCustomer;
+    private com.k33ptoo.components.KButton btCustomer1;
     private com.k33ptoo.components.KButton btDaily;
     private com.k33ptoo.components.KButton btLaptop;
     private com.k33ptoo.components.KButton btPhone;

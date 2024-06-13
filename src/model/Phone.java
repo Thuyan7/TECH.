@@ -18,15 +18,7 @@ public class Phone implements Serializable {
     private String image;
     private String description;
     
-        public Phone(){
-        this.id = 0;
-        this.name="";
-        this.image="";
-        this.quantity= 0;
-        this.price="";
-        this.description="";
-             
-                
+        public Phone(){         
     }
 
     public Phone(int id,String name, String price,int quantity,String image, String description) {

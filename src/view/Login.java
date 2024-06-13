@@ -1,13 +1,8 @@
 package view;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import controller.LoginController;
 import javax.swing.JOptionPane;
-import database.DatabaseConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -20,10 +15,12 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Login extends javax.swing.JFrame {
     int attempts;
+    private LoginController loginController;
     /**
      * Creates new form Login
      */
     public Login() {
+        loginController = new LoginController(this);
         initComponents();
     }
     
@@ -125,29 +122,20 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginActionPerformed
-        String admin = "admin";
-        String password = "admin123";
-        String enteredAdmin = jTextField2.getText(); 
-        String enteredPassword = new String(jPasswordField1.getPassword()); 
-
-        if (enteredAdmin.equals(admin)
-                && enteredPassword.equals(password)) {
-            
-            JOptionPane.showMessageDialog(null, "Login Successful!");
-            new Home().setVisible(true);
-            dispose();
-        } else {
-            attempts++; 
-            if (attempts >= 3) {
-                JOptionPane.showMessageDialog(null, "Too many failed attempts. Exiting...");
-                System.exit(0); 
-            } else {
-               
-                JOptionPane.showMessageDialog(null, "Incorrect admin or password. Please try again.");
-            }
-        }
+        String enteredAdmin = jTextField2.getText();
+        String enteredPassword = new String(jPasswordField1.getPassword());
+        loginController.handleLogin(enteredAdmin, enteredPassword);
     }//GEN-LAST:event_LoginActionPerformed
 
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    public void navigateToHome() {
+        new Home().setVisible(true);
+        dispose();
+    }
+    
     /**
      * @param args the command line arguments
      */

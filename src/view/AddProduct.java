@@ -4,14 +4,12 @@
  */
 package view;
 
-import static DataBase.LaptopManager.addLaptop;
-import static DataBase.PhoneManager.addPhone;
-import java.sql.*;
+
+
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import com.mysql.cj.xdevapi.PreparableStatement;
-import com.sun.jdi.connect.spi.Connection;
-import database.DatabaseConnection;
+import controller.AddProductController;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
 
 /**
@@ -196,16 +194,28 @@ public class AddProduct extends javax.swing.JFrame {
         String name = nametxt.getText();
         String price = pricetxt.getText();
         int quantity = (int) quantityTxt.getValue();
-        String des = destxt.getText();
+        String description = destxt.getText();
         String img = imgtxt.getText();
         String type = jComboBox1.getSelectedItem().toString();
-
-        // Thêm dữ liệu vào bảng tương ứng
-        if (type.equals("Laptop")) {
-            addLaptop(name, price,quantity, des, img);
-        } else if (type.equals("Smartphone")) {
-            addPhone(name, price,quantity, des, img);
+        
+        if (name.isEmpty() || description.isEmpty() || img.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+       
+        if (price.matches(".*[a-zA-Z].*")) {
+            JOptionPane.showMessageDialog(this, "Price should not contain letters.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if(quantity == 0 ){
+            JOptionPane.showMessageDialog(this, "Quantity must be greater than 0", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        AddProductController.addProduct(name, price, quantity, description,img, type);
+       
+        JOptionPane.showMessageDialog(this, "Product added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_savebtActionPerformed
 
     private void kButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kButton1ActionPerformed

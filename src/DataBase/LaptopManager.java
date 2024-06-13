@@ -53,9 +53,6 @@ public class LaptopManager {
             statement.setString(5, img);
 
             int rowsInserted = statement.executeUpdate();
-            if (rowsInserted > 0) {
-                System.out.println("A new laptop was inserted successfully!");
-            }
             DatabaseConnection.closeConnection(conn);
         } catch (SQLException ex) {
             ex.printStackTrace();

@@ -8,7 +8,6 @@ import database.DatabaseConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import model.Laptop;
 import model.Phone;
 
 
@@ -47,7 +46,7 @@ public class PhoneManager {
        public static void addPhone(String name, String price,int quantity, String des, String img) {
         try {
             Connection conn = DatabaseConnection.getConnection();
-            String sql = "INSERT INTO phone (name, price,quantity description, image) VALUES (?, ?,?, ?, ?)";
+            String sql = "INSERT INTO phone (name, price,quantity,description, image) VALUES (?, ?,?, ?, ?)";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, name);
             statement.setString(2, price);
@@ -56,9 +55,6 @@ public class PhoneManager {
             statement.setString(5, img);
 
             int rowsInserted = statement.executeUpdate();
-            if (rowsInserted > 0) {
-                System.out.println("A new phone was inserted successfully!");
-            }
             DatabaseConnection.closeConnection(conn);
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -73,7 +69,7 @@ public class PhoneManager {
 			ps.executeUpdate();
 			DatabaseConnection.closeConnection(con);
 		} catch (Exception e) {
-			// TODO: handle exception
+		
 		}
 		
 	}
@@ -92,7 +88,7 @@ public class PhoneManager {
         ps.executeUpdate();
         DatabaseConnection.closeConnection(con);
     } catch (Exception e) {
-        e.printStackTrace(); // Handle exception
+        e.printStackTrace(); 
     }
 }
   

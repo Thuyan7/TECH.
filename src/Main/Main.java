@@ -1,20 +1,51 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Main;
 
 import view.Login;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import javax.swing.JOptionPane;
-/**
- *
- * @author AN
- */
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
 public class Main {
-    public static void main(String args[]) {
-      FlatMacLightLaf.setup();
-      Login login = new Login();
-      login.setVisible(true);
+    public static void main(String[] args) {
+        try {
+            // Setup FlatLaf theme
+            FlatMacLightLaf.setup();
+        } catch (Exception e) {
+            // Log and display error if theme setup fails
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to initialize LaF", e);
+            JOptionPane.showMessageDialog(null, "Failed to initialize LaF", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Start UI
+        java.awt.EventQueue.invokeLater(() -> {
+            Login login = new Login();
+            login.setVisible(true);
+        });
+
+        // Start server threads
+        startServerThreads();
+    }
+
+    private static void startServerThreads() {
+        Thread databaseServerThread = new Thread(() -> {
+            try {
+                DatabaseServer databaseServer = new DatabaseServer(1234);
+                databaseServer.start();
+            } catch (Exception e) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Error starting DatabaseServer", e);
+            }
+        });
+        databaseServerThread.start();
+        Thread serverThread = new Thread(() -> {
+            try {
+                Server server = new Server(1235);
+                server.start();
+            } catch (Exception e) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Error starting Server", e);
+            }
+        });
+        serverThread.start();
     }
 }

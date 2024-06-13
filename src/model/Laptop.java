@@ -18,15 +18,7 @@ public class Laptop implements Serializable{
     private String image;
     private String description;
    
-    public Laptop(){
-        this.id = 0;
-        this.name="";
-        this.image="";
-        this.quantity=0;
-        this.price="";
-        this.description="";
-             
-                
+    public Laptop(){          
     }
     public Laptop(int id,String name, String price,int quantity,String image, String description) {
         this.id=id;

@@ -5,32 +5,20 @@
 package view;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.swing.JOptionPane;
-import database.DatabaseConnection;
-import java.sql.*;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import controller.BuyController;
 import database.DatabaseConnection;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.*;
-import java.awt.*;
-import java.io.File;
 import java.sql.SQLException;
-import org.w3c.dom.Document;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  *
  * @author AN
  */
 public class Buy extends javax.swing.JFrame {
-
-    private Document document;
+    private BuyController controller;
 
     /**
      * Creates new form Buy1
@@ -39,8 +27,8 @@ public class Buy extends javax.swing.JFrame {
         initComponents();
         nameProduct.setText(productName);
         priceProduct.setText(price);
+        controller = new BuyController();
 
-        
     }
 
     /**
@@ -84,6 +72,8 @@ public class Buy extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setText("Citizen Identification:");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 190, 30));
+
+        phonetxt.setColumns(10);
         jPanel1.add(phonetxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 250, 300, 30));
 
         nametxt.addActionListener(new java.awt.event.ActionListener() {
@@ -146,114 +136,79 @@ public class Buy extends javax.swing.JFrame {
   
 
     private void kButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kButton2ActionPerformed
-    String name = nametxt.getText();
-    String cccd = cccdtxt.getText();
-    String phone = phonetxt.getText();
-    String productName = nameProduct.getText();
-    String price = priceProduct.getText();
-    int quantity = (int) quantityTxt.getValue();
-
-    if (quantity <= 0) {
-        JOptionPane.showMessageDialog(this, "Quantity must be greater than 0");
-        return;
-    }
-    Connection conn = null;
-    try {
-        conn = DatabaseConnection.getConnection();
-        if (conn == null) {
-            throw new SQLException("Unable to establish a connection");
-        }
-        conn.setAutoCommit(false);
-        String checkIdSql = "SELECT COUNT(*) FROM `customer` WHERE id = ?";
-        PreparedStatement checkIdStmt = conn.prepareStatement(checkIdSql);
-        checkIdStmt.setString(1, cccd);
-        ResultSet idResult = checkIdStmt.executeQuery();
-        idResult.next();
-        int idCount = idResult.getInt(1);
-        if (idCount > 0) {
-            JOptionPane.showMessageDialog(this, "Citizen Identification already exists");
-            return; 
-        }
-        boolean isProductFound = false;
-        String productType = null;
-
-        String[] tables = {"phone", "laptop"};
-        for (String table : tables) {
-            String checkSql = "SELECT quantity FROM " + table + " WHERE name = ?";
-            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
-            checkStmt.setString(1, productName);
-            ResultSet rs = checkStmt.executeQuery();
-            if (rs.next()) {
-                isProductFound = true;
-                int currentQuantity = rs.getInt("quantity");
-                if (currentQuantity < quantity) {
-                    JOptionPane.showMessageDialog(this, "Insufficient stock in " + table + " table");
-                    conn.rollback();
-                    conn.close();
-                    return;
-                }
-                String updateSql = "UPDATE " + table + " SET quantity = quantity - ? WHERE name = ?";
-                PreparedStatement updateStmt = conn.prepareStatement(updateSql);
-                updateStmt.setInt(1, quantity);
-                updateStmt.setString(2, productName);
-                updateStmt.executeUpdate();
-                updateStmt.close();
-
-                productType = table;
-                break;
-            }
-            checkStmt.close();
-        }
-        if (!isProductFound) {
-            JOptionPane.showMessageDialog(this,  "Product not found");
-            conn.rollback();
-            conn.close();
+        String name = nametxt.getText();
+        String cccd = cccdtxt.getText();
+        String phone = phonetxt.getText();
+        String productName = nameProduct.getText();
+        String price = priceProduct.getText();
+        int quantity = (int) quantityTxt.getValue();
+        
+        if(phone.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Phone should not be empty");
+            return;
+        }else if (!Pattern.matches("(84|0[3|5|7|8|9])+([0-9]{8})\\b",phone)) {
+            JOptionPane.showMessageDialog(this,"Phone number is not in the correct format");
             return;
         }
-        String insertUserSql = "INSERT INTO `customer` (name, id, phone) VALUES (?, ?, ?)";
-        PreparedStatement insertUserStmt = conn.prepareStatement(insertUserSql);
-        insertUserStmt.setString(1, name);
-        insertUserStmt.setString(2, cccd);
-        insertUserStmt.setString(3, phone);
-        insertUserStmt.executeUpdate();
-        insertUserStmt.close();
         
-        String insertOrderSql = "INSERT INTO `order` (nameproduct, price, quantity, date, product_type) VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement insertOrderStmt = conn.prepareStatement(insertOrderSql);
-        insertOrderStmt.setString(1, productName);
-        insertOrderStmt.setString(2, price);
-        insertOrderStmt.setInt(3, quantity);
-
-        Timestamp currentTimestamp = new Timestamp(new Date().getTime());
-        insertOrderStmt.setTimestamp(4, currentTimestamp);
-        insertOrderStmt.setString(5, productType);
-        insertOrderStmt.executeUpdate();
-        insertOrderStmt.close();
-        conn.commit();
-
-        DatabaseConnection.closeConnection(conn);
-
-        JOptionPane.showMessageDialog(this, "Purchase successful!");
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this,"An error occurred. Please try again.");
-        try {
-            if (conn != null) {
-                conn.rollback(); 
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        if(cccd.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Citizen should not be empty");
+            return;
+        }else if (!Pattern.matches("(0)+([0-9]{11})\\b",cccd)) {
+            JOptionPane.showMessageDialog(this,"Citizen is not correct");
+            return;
         }
-    } finally {
-        try {
-            if (conn != null) {
-                 conn.close();
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        
+        if(name.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Name should not be empty");
+            return;
         }
-    }
+   
+
+        if (quantity == 0) {
+            JOptionPane.showMessageDialog(this, "Quantity must be greater than 0");
+            return;
+        }
+
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            if (conn == null) {
+                throw new SQLException("Unable to establish a connection");
+            }
+            conn.setAutoCommit(false);
+
+            if (!controller.checkProductStock(productName, quantity, conn)) {
+                JOptionPane.showMessageDialog(this, "Insufficient stock for the product");
+                conn.rollback();
+                return;
+            }
+
+            controller.saveCustomer(name, cccd, phone, conn);
+            controller.saveOrder(productName, price, quantity,conn);
+
+            conn.commit();
+            JOptionPane.showMessageDialog(this, "Purchase successful!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "An error occurred. Please try again.");
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
     }//GEN-LAST:event_kButton2ActionPerformed
 
     

@@ -335,4 +335,16 @@ public class UpdateProduct extends javax.swing.JFrame {
     private javax.swing.JTextField typetxt;
     private com.k33ptoo.components.KButton updatebt;
     // End of variables declaration//GEN-END:variables
+    
+    public javax.swing.JTextField getDestxt() { return destxt; }
+    public javax.swing.JTextField getIdtxt() { return idtxt; }
+    public javax.swing.JButton getImg() { return img; }
+    public javax.swing.JTextField getImgtxt() { return imgtxt; }
+    public com.k33ptoo.components.KButton getKButton1() { return kButton1; }
+    public javax.swing.JTextField getNametxt() { return nametxt; }
+    public javax.swing.JTextField getPricetxt() { return pricetxt; }
+    public javax.swing.JSpinner getQuantityTxt() { return quantityTxt; }
+    public javax.swing.JComboBox<String> getTypecb() { return typecb; }
+    public javax.swing.JTextField getTypetxt() { return typetxt; }
+    public com.k33ptoo.components.KButton getUpdatebt() { return updatebt; }
 }
