@@ -18,6 +18,7 @@ import DataBase.StaffManager;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.k33ptoo.components.KButton;
 import com.k33ptoo.components.KGradientPanel;
+import controller.HomeController;
 import database.DatabaseConnection;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -56,7 +57,7 @@ import javax.swing.table.TableRowSorter;
  * @author AN
  */
 public class Home extends javax.swing.JFrame {
-    private JTable table;
+    private HomeController controller = new HomeController();
     public Home() {
         initComponents();
         displayLaptop();
@@ -446,210 +447,85 @@ public class Home extends javax.swing.JFrame {
         jScrollPane1.setViewportView(scrollPane);
 }
 
-    private void displayDailyTable() {
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Product Name");
-        model.addColumn("Quantity");
-        model.addColumn("Price");
-        model.addColumn("Date");
-        model.addColumn("Total");
-
-        int totalRevenue = 0;
-        String query = "SELECT nameproduct, quantity, price,date FROM `order`";
-
-        try (
-                Connection connection = DatabaseConnection.getConnection(); 
-                PreparedStatement statement = connection.prepareStatement(query);
-                ResultSet resultSet = statement.executeQuery();) {
-            while (resultSet.next()) {
-                String nameproduct = resultSet.getString("nameproduct");
-                int quantity = resultSet.getInt("quantity");
-                int price = Integer.parseInt(resultSet.getString("price").replaceAll("[^\\d]", ""));
-                Date date = resultSet.getDate("date");
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                String formattedDate = dateFormat.format(date);
-                int total = quantity * price;
-                totalRevenue += total;
-                model.addRow(new Object[]{nameproduct, quantity, price + "đ", formattedDate, total + "đ"});
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        table = new JTable(model);
+      
+    public void displayDailyTable() {
+        DefaultTableModel model = controller.getDailyTableModel();
+        JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
 
         Color mainColor = new Color(51, 153, 255);
-        KGradientPanel totalRevenuepanel = new KGradientPanel();
-        totalRevenuepanel.setPreferredSize(new Dimension(250, 50));
-        totalRevenuepanel.setBackground(Color.WHITE);
-        totalRevenuepanel.setkStartColor(mainColor);
-        totalRevenuepanel.setkEndColor(Color.white);
+        KGradientPanel totalRevenuePanel = new KGradientPanel();
+        totalRevenuePanel.setPreferredSize(new Dimension(250, 50));
+        totalRevenuePanel.setBackground(Color.WHITE);
+        totalRevenuePanel.setkStartColor(mainColor);
+        totalRevenuePanel.setkEndColor(Color.white);
 
-        JLabel totalRevenuelabel = new JLabel("Total Revenue: " + totalRevenue + "đ");
-        totalRevenuelabel.setFont(new Font("Arial", Font.BOLD, 16));
-        totalRevenuepanel.add(totalRevenuelabel);
+        int totalRevenue = controller.calculateTotalRevenue(table);
+        JLabel totalRevenueLabel = new JLabel("Total Revenue: " + totalRevenue + "đ");
+        totalRevenueLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        totalRevenuePanel.add(totalRevenueLabel);
+
         JTextField searchField = new JTextField(10);
-        totalRevenuepanel.add(searchField);
+        totalRevenuePanel.add(searchField);
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(e -> {
-            int totalRevenue1 = 0;
             String searchText = searchField.getText();
-            System.out.println(searchText);
-            if (!searchText.isEmpty()) {
-                try {
+            try {
+                if (!searchText.isEmpty()) {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    Date searchDate = dateFormat.parse(searchText);
-                    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-                    table.setRowSorter(sorter);
-                    int dateColumnIndex = model.findColumn("Date");
-                    RowFilter<DefaultTableModel, Integer> rowFilter = RowFilter.regexFilter(searchText, dateColumnIndex);
-                    sorter.setRowFilter(rowFilter);
-                    for (int i = 0; i < table.getRowCount(); i++) {
-                        int quantity = (int) table.getValueAt(i, 1);
-                        String value = table.getValueAt(i, 2).toString();
-                        value = value.replaceAll("\\D", "");
-                        int price = Integer.parseInt(value);
-                        int total = quantity * price;
-                        totalRevenue1 += total;
-                    }
-                    totalRevenuelabel.setText("Total Revenue: " + totalRevenue1 + "đ");
-                } catch (ParseException ex) {
-                    JOptionPane.showMessageDialog(null, "Invalid date format. Please enter the date in yyyy-MM-dd format.");
+                    dateFormat.parse(searchText);
                 }
-            } else {
-                TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
-                if (sorter != null) {
-                    sorter.setRowFilter(null);
-                }
+                controller.filterTable(table, model, searchText, "Date");
+                int filteredTotalRevenue = controller.calculateTotalRevenue(table);
+                totalRevenueLabel.setText("Total Revenue: " + filteredTotalRevenue + "đ");
+            } catch (ParseException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid date format. Please enter the date in yyyy-MM-dd format.");
             }
         });
-        totalRevenuepanel.add(searchButton);
+        totalRevenuePanel.add(searchButton);
+
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(totalRevenuepanel, BorderLayout.SOUTH);
+        panel.add(totalRevenuePanel, BorderLayout.SOUTH);
         jScrollPane1.setViewportView(panel);
     }
 
-    private void displayUserTable() {
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Customer Name");
-        model.addColumn("ID");
-        model.addColumn("Phone Number");
-        
-        String query = "SELECT name, id, phone FROM `customer`";
-
-        try (
-                Connection connection = DatabaseConnection.getConnection(); 
-                PreparedStatement statement = connection.prepareStatement(query);
-                ResultSet resultSet = statement.executeQuery();) {
-            while (resultSet.next()) {
-                String namecustomer = resultSet.getString("name");
-                String id = resultSet.getString("id");
-                String phone = resultSet.getString("phone");
-                model.addRow(new Object[]{namecustomer, id, phone});
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        table = new JTable(model);
+    public void displayUserTable() {
+        DefaultTableModel model = controller.getUserTableModel();
+        JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
 
         Color mainColor = new Color(51, 153, 255);
-        KGradientPanel totalRevenuepanel = new KGradientPanel();
-        totalRevenuepanel.setPreferredSize(new Dimension(250, 50));
-        totalRevenuepanel.setBackground(Color.WHITE);
-        totalRevenuepanel.setkStartColor(mainColor);
-        totalRevenuepanel.setkEndColor(Color.white);
-
+        KGradientPanel totalRevenuePanel = new KGradientPanel();
+        totalRevenuePanel.setPreferredSize(new Dimension(250, 50));
+        totalRevenuePanel.setBackground(Color.WHITE);
+        totalRevenuePanel.setkStartColor(mainColor);
+        totalRevenuePanel.setkEndColor(Color.white);
         JTextField searchField = new JTextField(10);
-        totalRevenuepanel.add(searchField);
+        totalRevenuePanel.add(searchField);
 
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(e -> {
             String searchText = searchField.getText();
-            System.out.println(searchText);
-            if (!searchText.isEmpty()) {
-
-                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-                table.setRowSorter(sorter);
-                int dateColumnIndex = model.findColumn("ID");
-                RowFilter<DefaultTableModel, Integer> rowFilter = RowFilter.regexFilter(searchText, dateColumnIndex);
-                sorter.setRowFilter(rowFilter);
-            } else {
-                TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
-                if (sorter != null) {
-                    sorter.setRowFilter(null);
-                }
-            }
+            controller.filterTable(table, model, searchText, "ID");
         });
-        totalRevenuepanel.add(searchButton);
+        totalRevenuePanel.add(searchButton);
+
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(totalRevenuepanel, BorderLayout.SOUTH);
+        panel.add(totalRevenuePanel, BorderLayout.SOUTH);
         jScrollPane1.setViewportView(panel);
     }
+
     
     private void displayStaffTable() {
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID");
-        model.addColumn("Staff Name");
-        model.addColumn("Citizen ID");
-        model.addColumn("Birth Date");
-        model.addColumn("Account Status");
-        String query = "SELECT id, fullname, citizenid, date, is_approved FROM `accountuser`";
-
-        try (
-            Connection connection = DatabaseConnection.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet resultSet = statement.executeQuery();) {
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String fullname = resultSet.getString("fullname");
-                String citizenid = resultSet.getString("citizenid");
-                String date = resultSet.getString("date");
-                boolean isApproved = resultSet.getBoolean("is_approved");
-                String status = isApproved ? "approved" : "reject";
-                model.addRow(new Object[]{id, fullname, citizenid, date, status});
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        DefaultTableModel model = controller.getStaffTableModel();
         JTable table = new JTable(model);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.getColumnModel().getColumn(0).setMinWidth(0);
-        table.getColumnModel().getColumn(0).setMaxWidth(0);
-        table.getColumnModel().getColumn(0).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
-
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1) {
-                    int selectedRow = table.getSelectedRow();
-                    if (selectedRow != -1) {
-                        int accountId = (int) model.getValueAt(selectedRow, 0);
-                        String accountName = (String) model.getValueAt(selectedRow, 1);
-                        int response = JOptionPane.showConfirmDialog(
-                            null,
-                            "Do you want to approve the account for " + accountName + "?",
-                            "Approve Account",
-                            JOptionPane.YES_NO_OPTION
-                        );
-                        boolean isApproved = (response == JOptionPane.YES_OPTION);
-                        StaffManager staffManager = new StaffManager();
-                        if (staffManager.updateApprovalStatus(accountId, isApproved)) {
-                            model.setValueAt(isApproved ? "approved" : "reject", selectedRow, 4);
-                            JOptionPane.showMessageDialog(null, "Account status updated successfully.");
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Failed to update account status.");
-                        }
-                    }
-                }
-            }
-        });
+  
+        controller.addTableMouseListener(table, model);
 
         Color mainColor = new Color(51, 153, 255);
         KGradientPanel totalRevenuePanel = new KGradientPanel();
@@ -662,21 +538,9 @@ public class Home extends javax.swing.JFrame {
         totalRevenuePanel.add(searchField);
 
         JButton searchButton = new JButton("Search");
-        searchButton.addActionListener(e -> {
-            String searchText = searchField.getText();
-            System.out.println(searchText);
-            if (!searchText.isEmpty()) {
-                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-                table.setRowSorter(sorter);
-                int idColumnIndex = model.findColumn("Citizen ID");
-                RowFilter<DefaultTableModel, Integer> rowFilter = RowFilter.regexFilter(searchText, idColumnIndex);
-                sorter.setRowFilter(rowFilter);
-            } else {
-                TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
-                if (sorter != null) {
-                    sorter.setRowFilter(null);
-                }
-            }
+        searchButton.addActionListener(e ->{
+                String searchText = searchField.getText();
+                controller.filterTable(table, model, searchText, "Citizen ID");
         });
         totalRevenuePanel.add(searchButton);
 
@@ -685,8 +549,9 @@ public class Home extends javax.swing.JFrame {
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(totalRevenuePanel, BorderLayout.SOUTH);
         jScrollPane1.setViewportView(panel);
-}
 
+
+}
 
 
 
