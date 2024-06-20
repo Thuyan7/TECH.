@@ -109,9 +109,13 @@ public class UpdateProductController {
 
     private void chooseImage() {
         JFileChooser chooser = new JFileChooser();
-        chooser.showOpenDialog(null);
-        java.io.File file = chooser.getSelectedFile();
-        String filename = file.getAbsolutePath();
-        view.getImgtxt().setText(filename);
+        int returnValue = chooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            java.io.File file = chooser.getSelectedFile();
+            if (file != null) {
+                String filename = file.getAbsolutePath();
+                view.getImgtxt().setText(filename);
+            }
+        } 
     }
 }

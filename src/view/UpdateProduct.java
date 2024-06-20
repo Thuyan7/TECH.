@@ -13,6 +13,7 @@ import java.sql.*;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.mysql.cj.xdevapi.PreparableStatement;
 import com.sun.jdi.connect.spi.Connection;
+import controller.UpdateProductController;
 import database.DatabaseConnection;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -33,39 +34,8 @@ public class UpdateProduct extends javax.swing.JFrame {
         initComponents();
         idtxt.setText(ids);
         typetxt.setText(type);
-        if(type.equals("LAPTOP")){
-            getLaptop(Integer.parseInt(ids));
-        }else if(type.equals("SMARTPHONE")){
-            getPhone(Integer.parseInt(ids));
-        }
+        new UpdateProductController(this);
     }
-    private void getLaptop(int id) {
-    Laptop laptop = LaptopManager.getLaptopById(id);
-    if (laptop != null) {
-        nametxt.setText(laptop.getName());
-        pricetxt.setText(laptop.getPrice());
-        quantityTxt.setValue(laptop.getQuantity());
-        imgtxt.setText(laptop.getImage());
-        destxt.setText(laptop.getDescription());
-        typecb.setSelectedItem("Laptop");
-    } else {
-        JOptionPane.showMessageDialog(this, "No laptop found with the given ID.");
-    }
-}
-    
-    private void getPhone(int id) {
-    Phone phone = PhoneManager.getPhoneById(id);
-    if (phone != null) {
-        nametxt.setText(phone.getName());
-        pricetxt.setText(phone.getPrice());
-        quantityTxt.setValue(phone.getQuantity());
-        imgtxt.setText(phone.getImage());
-        destxt.setText(phone.getDescription());
-        typecb.setSelectedItem("Smartphone"); 
-    } else {
-        JOptionPane.showMessageDialog(this, "No phone found with the given ID.");
-    }
-}
 
 
     /**
@@ -227,42 +197,15 @@ public class UpdateProduct extends javax.swing.JFrame {
     }//GEN-LAST:event_destxtActionPerformed
 
     private void updatebtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updatebtActionPerformed
-     try {
-        int idd = Integer.parseInt(idtxt.getText());
-        String name = nametxt.getText();
-        String price = pricetxt.getText();
-        int quantity = (int) quantityTxt.getValue();
-        String des = destxt.getText();
-        String img = imgtxt.getText();
-        String type = typetxt.getText();
-        
-        if (type.equals("LAPTOP")) {
-            Laptop laptop = new Laptop(idd, name, price,quantity,img, des);
-            LaptopManager.updateLaptop(laptop);
-        } else if (type.equals("SMARTPHONE")) {
-            Phone phone = new Phone(idd, name, price,quantity,img, des);
-            PhoneManager.updatePhone(phone);
-        }
-        JOptionPane.showMessageDialog(this, "Product updated successfully!");
-        
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Invalid ID format.");
-    }
+ 
     }//GEN-LAST:event_updatebtActionPerformed
 
     private void kButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kButton1ActionPerformed
-        nametxt.setText("");
-        pricetxt.setText("");
-        destxt.setText("");
-        imgtxt.setText("");
+     
     }//GEN-LAST:event_kButton1ActionPerformed
 
     private void imgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imgActionPerformed
-        JFileChooser chooser = new JFileChooser();
-        chooser.showOpenDialog(null);
-        java.io.File file = chooser.getSelectedFile();
-        String filename = file.getAbsolutePath();
-        imgtxt.setText(filename);
+
     }//GEN-LAST:event_imgActionPerformed
 
     private void pricetxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pricetxtActionPerformed
@@ -311,6 +254,7 @@ public class UpdateProduct extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new UpdateProduct("id","type").setVisible(true);
+                
             }
         });
     }
@@ -336,15 +280,47 @@ public class UpdateProduct extends javax.swing.JFrame {
     private com.k33ptoo.components.KButton updatebt;
     // End of variables declaration//GEN-END:variables
     
-    public javax.swing.JTextField getDestxt() { return destxt; }
-    public javax.swing.JTextField getIdtxt() { return idtxt; }
-    public javax.swing.JButton getImg() { return img; }
-    public javax.swing.JTextField getImgtxt() { return imgtxt; }
-    public com.k33ptoo.components.KButton getKButton1() { return kButton1; }
-    public javax.swing.JTextField getNametxt() { return nametxt; }
-    public javax.swing.JTextField getPricetxt() { return pricetxt; }
-    public javax.swing.JSpinner getQuantityTxt() { return quantityTxt; }
-    public javax.swing.JComboBox<String> getTypecb() { return typecb; }
-    public javax.swing.JTextField getTypetxt() { return typetxt; }
-    public com.k33ptoo.components.KButton getUpdatebt() { return updatebt; }
+      public javax.swing.JTextField getDestxt() {
+        return destxt;
+    }
+
+    public javax.swing.JTextField getIdtxt() {
+        return idtxt;
+    }
+
+    public javax.swing.JButton getImg() {
+        return img;
+    }
+
+    public javax.swing.JTextField getImgtxt() {
+        return imgtxt;
+    }
+
+    public com.k33ptoo.components.KButton getKButton1() {
+        return kButton1;
+    }
+
+    public javax.swing.JTextField getNametxt() {
+        return nametxt;
+    }
+
+    public javax.swing.JTextField getPricetxt() {
+        return pricetxt;
+    }
+
+    public javax.swing.JSpinner getQuantityTxt() {
+        return quantityTxt;
+    }
+
+    public javax.swing.JComboBox<String> getTypecb() {
+        return typecb;
+    }
+
+    public javax.swing.JTextField getTypetxt() {
+        return typetxt;
+    }
+
+    public com.k33ptoo.components.KButton getUpdatebt() {
+        return updatebt;
+    }
 }

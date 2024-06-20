@@ -102,7 +102,7 @@ public class HomeController {
         table.setRowSorter(sorter);
         int columnIndex = model.findColumn(columnName);
         if (!searchText.isEmpty()) {
-RowFilter<DefaultTableModel, Integer> rowFilter = RowFilter.regexFilter(searchText, columnIndex);
+            RowFilter<DefaultTableModel, Integer> rowFilter = RowFilter.regexFilter(searchText, columnIndex);
             sorter.setRowFilter(rowFilter);
         } else {
             sorter.setRowFilter(null);

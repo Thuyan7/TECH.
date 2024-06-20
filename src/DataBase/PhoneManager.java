@@ -21,7 +21,7 @@ public class PhoneManager {
         List<Phone> phoneList = new ArrayList<>();
         String sql = "SELECT * FROM phone";
         try {
-           Connection con= DatabaseConnection.getConnection();
+            Connection con= DatabaseConnection.getConnection();
             Statement stmt= con.createStatement();
             ResultSet rs= stmt.executeQuery(sql);
             

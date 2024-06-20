@@ -3,6 +3,8 @@ package controller;
 
 import java.sql.*;
 import java.util.Date;
+import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
 
 public class BuyController {
     public boolean checkCitizenIdExists(String cccd, Connection conn) throws SQLException {
@@ -45,13 +47,15 @@ public class BuyController {
     }
 
     public void saveCustomer(String name, String cccd, String phone, Connection conn) throws SQLException {
-        String insertUserSql = "INSERT INTO `customer` (name, id, phone) VALUES (?, ?, ?)";
-        PreparedStatement insertUserStmt = conn.prepareStatement(insertUserSql);
-        insertUserStmt.setString(1, name);
-        insertUserStmt.setString(2, cccd);
-        insertUserStmt.setString(3, phone);
-        insertUserStmt.executeUpdate();
-        insertUserStmt.close();
+        if (!checkCitizenIdExists(cccd, conn)) {
+            String insertUserSql = "INSERT INTO `customer` (name, id, phone) VALUES (?, ?, ?)";
+            PreparedStatement insertUserStmt = conn.prepareStatement(insertUserSql);
+            insertUserStmt.setString(1, name);
+            insertUserStmt.setString(2, cccd);
+            insertUserStmt.setString(3, phone);
+            insertUserStmt.executeUpdate();
+            insertUserStmt.close();
+    }  
     }
 
     public void saveOrder(String productName, String price, int quantity,Connection conn) throws SQLException {
@@ -65,4 +69,29 @@ public class BuyController {
         insertOrderStmt.executeUpdate();
         insertOrderStmt.close();
     }
+    
+    public boolean validateInput(String customerName, String citizenId, String phone, int quantity) {
+        if (citizenId.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Citizen ID should not be empty", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        } else if (!Pattern.matches("(0)+([0-9]{11})\\b", citizenId)) {
+            JOptionPane.showMessageDialog(null, "Citizen ID is not correct", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }else if (phone.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Phone should not be empty", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        } else if (!Pattern.matches("(84|0[3|5|7|8|9])+([0-9]{8})\\b", phone)) {
+            JOptionPane.showMessageDialog(null, "Phone number is not in the correct format.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }else if (quantity == 0) {
+            JOptionPane.showMessageDialog(null, "Quantity must be greater than 0 ", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        else if (customerName.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Name should not be empty", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
 }

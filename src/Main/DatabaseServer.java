@@ -21,11 +21,9 @@ public class DatabaseServer extends Thread {
     @Override
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("DatabaseServer is listening on port " + port);
-
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("New client connected");
+                
 
                 new ServerThread(socket).start();
             }
@@ -57,7 +55,7 @@ public class DatabaseServer extends Thread {
                         List<Phone> phoneList = getPhoneList();
                         output.writeObject(phoneList);
                         output.flush();
-                        break;
+                        break;    
                     default:
                         break;
                 }

@@ -76,24 +76,25 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="29" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="btCustomer1" alignment="1" max="32767" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="btCustomer" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="btDaily" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="btLaptop" max="32767" attributes="0"/>
-                                      <Component id="btPhone" max="32767" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace pref="23" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="btCustomer" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="btDaily" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="btLaptop" max="32767" attributes="0"/>
+                                  <Component id="btPhone" max="32767" attributes="0"/>
                               </Group>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Component id="logOut" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
-                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="logOut" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="btCustomer1" min="-2" pref="191" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -102,7 +103,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="200" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="191" max="-2" attributes="0"/>
                       <Component id="btLaptop" min="-2" pref="25" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                       <Component id="btPhone" min="-2" pref="26" max="-2" attributes="0"/>
@@ -110,9 +111,9 @@
                       <Component id="btDaily" min="-2" pref="26" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                       <Component id="btCustomer" min="-2" pref="26" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                       <Component id="btCustomer1" min="-2" pref="26" max="-2" attributes="0"/>
-                      <EmptySpace pref="143" max="32767" attributes="0"/>
+                      <EmptySpace pref="138" max="32767" attributes="0"/>
                       <Component id="logOut" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                   </Group>
@@ -237,7 +238,7 @@
             </Component>
             <Component class="com.k33ptoo.components.KButton" name="btCustomer1">
               <Properties>
-                <Property name="text" type="java.lang.String" value="STAFF INFORMATION"/>
+                <Property name="text" type="java.lang.String" value="STAFF MANAGEMENT"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="12" style="1"/>
                 </Property>

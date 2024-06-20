@@ -7,19 +7,13 @@ package view;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.sql.SQLException;
-import java.util.Date;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import DataBase.LaptopManager;
 import DataBase.PhoneManager;
-import DataBase.StaffManager;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.k33ptoo.components.KButton;
 import com.k33ptoo.components.KGradientPanel;
 import controller.HomeController;
-import database.DatabaseConnection;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -48,9 +42,6 @@ import javax.swing.table.DefaultTableModel;
 import model.Laptop;
 import model.Phone;
 import java.text.ParseException;
-import javax.swing.ListSelectionModel;
-import javax.swing.RowFilter;
-import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -105,7 +96,7 @@ public class Home extends javax.swing.JFrame {
     }
 
     private void displayLaptop() {
-        Color mainColor = new Color(51, 153, 255);
+        Color mainColor = new Color(0,0,0);
         LaptopManager laptopManager = new LaptopManager();
         List<model.Laptop> laptops = laptopManager.getLaptop();
 
@@ -188,7 +179,7 @@ public class Home extends javax.swing.JFrame {
 
     
     private void displayLaptopbyName() {
-        Color mainColor = new Color(51, 153, 255);
+        Color mainColor = new Color(51, 153, 250);
         String searchText = searchtxt.getText();
         List<Laptop> laptops = LaptopManager.getLaptopByName(searchText);
         
@@ -323,7 +314,6 @@ public class Home extends javax.swing.JFrame {
             phonePanel.add(Box.createVerticalStrut(10));
             phonePanel.add(descriptionLabel);
 
-            // Price
             JLabel priceLabel = new JLabel(phone.getPrice());
             priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             priceLabel.setFont(new Font("Segoe UI", 1, 12)); 
@@ -553,9 +543,6 @@ public class Home extends javax.swing.JFrame {
 
 }
 
-
-
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -674,7 +661,7 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
-        btCustomer1.setText("STAFF INFORMATION");
+        btCustomer1.setText("STAFF MANAGEMENT");
         btCustomer1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btCustomer1.setkAllowGradient(false);
         btCustomer1.setkBackGroundColor(new java.awt.Color(51, 153, 255));
@@ -692,26 +679,27 @@ public class Home extends javax.swing.JFrame {
         Menu.setLayout(MenuLayout);
         MenuLayout.setHorizontalGroup(
             MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
-                .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btCustomer1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
-                            .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(btCustomer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btDaily, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btLaptop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btPhone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addContainerGap())
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
-                            .addComponent(logOut)
-                            .addGap(82, 82, 82)))))
+            .addGroup(MenuLayout.createSequentialGroup()
+                .addContainerGap(23, Short.MAX_VALUE)
+                .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
+                        .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btCustomer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btDaily, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btLaptop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btPhone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
+                        .addComponent(logOut)
+                        .addGap(82, 82, 82))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
+                        .addComponent(btCustomer1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         MenuLayout.setVerticalGroup(
             MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(MenuLayout.createSequentialGroup()
-                .addGap(200, 200, 200)
+                .addGap(191, 191, 191)
                 .addComponent(btLaptop, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(45, 45, 45)
                 .addComponent(btPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -719,9 +707,9 @@ public class Home extends javax.swing.JFrame {
                 .addComponent(btDaily, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(45, 45, 45)
                 .addComponent(btCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
+                .addGap(45, 45, 45)
                 .addComponent(btCustomer1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 143, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 138, Short.MAX_VALUE)
                 .addComponent(logOut)
                 .addGap(50, 50, 50))
         );

@@ -18,10 +18,13 @@ import java.util.regex.Pattern;
  * @author AN
  */
 public class Buy extends javax.swing.JFrame {
-    private BuyController controller;
+
+    private final BuyController controller;
 
     /**
      * Creates new form Buy1
+     * @param productName
+     * @param price
      */
     public Buy(String productName, String price) {
         initComponents();
@@ -132,8 +135,7 @@ public class Buy extends javax.swing.JFrame {
     private void nametxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nametxtActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_nametxtActionPerformed
-    
-  
+
 
     private void kButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kButton2ActionPerformed
         String name = nametxt.getText();
@@ -141,34 +143,8 @@ public class Buy extends javax.swing.JFrame {
         String phone = phonetxt.getText();
         String productName = nameProduct.getText();
         String price = priceProduct.getText();
-        int quantity = (int) quantityTxt.getValue();
-        
-        if(phone.isEmpty()){
-            JOptionPane.showMessageDialog(this,"Phone should not be empty");
-            return;
-        }else if (!Pattern.matches("(84|0[3|5|7|8|9])+([0-9]{8})\\b",phone)) {
-            JOptionPane.showMessageDialog(this,"Phone number is not in the correct format");
-            return;
-        }
-        
-        if(cccd.isEmpty()){
-            JOptionPane.showMessageDialog(this,"Citizen should not be empty");
-            return;
-        }else if (!Pattern.matches("(0)+([0-9]{11})\\b",cccd)) {
-            JOptionPane.showMessageDialog(this,"Citizen is not correct");
-            return;
-        }
-        
-        if(name.isEmpty()){
-            JOptionPane.showMessageDialog(this,"Name should not be empty");
-            return;
-        }
-   
-
-        if (quantity == 0) {
-            JOptionPane.showMessageDialog(this, "Quantity must be greater than 0");
-            return;
-        }
+        String quantity = quantityTxt.getValue().toString();
+        int quantityNum = Integer.parseInt(quantity);
 
         Connection conn = null;
         try {
@@ -176,29 +152,36 @@ public class Buy extends javax.swing.JFrame {
             if (conn == null) {
                 throw new SQLException("Unable to establish a connection");
             }
+            
             conn.setAutoCommit(false);
 
-            if (!controller.checkProductStock(productName, quantity, conn)) {
+            if (controller.validateInput(productName, cccd, phone, quantityNum) == false ) {
+                return;
+            }
+
+            if (!controller.checkProductStock(productName, quantityNum, conn)) {
                 JOptionPane.showMessageDialog(this, "Insufficient stock for the product");
                 conn.rollback();
                 return;
             }
-
-            controller.saveCustomer(name, cccd, phone, conn);
-            controller.saveOrder(productName, price, quantity,conn);
+            if (controller.checkCitizenIdExists(cccd, conn)) {
+                
+                controller.saveOrder(productName, price, quantityNum, conn);
+            } else {
+                controller.saveCustomer(name, cccd, phone, conn);
+                controller.saveOrder(productName, price, quantityNum, conn);
+            }
 
             conn.commit();
             JOptionPane.showMessageDialog(this, "Purchase successful!");
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "An error occurred. Please try again.");
+        } catch (SQLException e) { 
             try {
                 if (conn != null) {
                     conn.rollback();
                 }
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                
             }
         } finally {
             try {
@@ -211,7 +194,6 @@ public class Buy extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_kButton2ActionPerformed
 
-    
     /**
      * @param args the command line arguments
      */

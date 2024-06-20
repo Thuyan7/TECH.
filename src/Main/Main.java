@@ -10,21 +10,20 @@ import java.util.logging.Logger;
 public class Main {
     public static void main(String[] args) {
         try {
-            // Setup FlatLaf theme
+            
             FlatMacLightLaf.setup();
         } catch (Exception e) {
-            // Log and display error if theme setup fails
+          
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to initialize LaF", e);
             JOptionPane.showMessageDialog(null, "Failed to initialize LaF", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        // Start UI
+        
         java.awt.EventQueue.invokeLater(() -> {
             Login login = new Login();
             login.setVisible(true);
         });
-
-        // Start server threads
+        
         startServerThreads();
     }
 
