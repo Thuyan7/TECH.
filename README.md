@@ -19,7 +19,7 @@
 - NetBeans IDE (phát triển và biên dịch)
 - Apache Ant (`build.xml`) để build dự án
 
-## 🛠 Yêu cầu cài đặt
+## Yêu cầu cài đặt
 
 - Java Development Kit (JDK) 8 trở lên
 - MySQL Server
